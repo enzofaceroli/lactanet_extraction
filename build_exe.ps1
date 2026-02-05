@@ -1,101 +1,60 @@
-Write-Host "=============================================="
-Write-Host " Gerador de Executável (Windows)"
-Write-Host "=============================================="
-Write-Host ""
+# ==============================
+# build_exe.ps1
+# Script para gerar EXE no Windows
+# ==============================
 
-# ------------------------------------------------
+$ErrorActionPreference = "Stop"
+
+Write-Host "======================================="
+Write-Host " Criando executavel do projeto"
+Write-Host "======================================="
+
 # 1. Verificar Python
-# ------------------------------------------------
+Write-Host "Verificando Python..."
 $python = Get-Command python -ErrorAction SilentlyContinue
 
 if (-not $python) {
-    Write-Host "❌ Python não encontrado."
-    Write-Host ""
-    Write-Host "➡️  Instale o Python 3 em:"
-    Write-Host "   https://www.python.org/downloads/windows/"
-    Write-Host ""
-    Write-Host "⚠️  IMPORTANTE:"
-    Write-Host "   Marque a opção 'Add Python to PATH'"
-    Write-Host ""
-    Pause
+    Write-Host "ERRO: Python nao encontrado."
+    Write-Host "Instale em: https://www.python.org/downloads/windows/"
+    Write-Host "Marque a opcao 'Add Python to PATH'"
     exit 1
 }
 
-Write-Host "✔ Python encontrado: $(python --version)"
-Write-Host ""
+Write-Host "Python encontrado."
 
-# ------------------------------------------------
-# 2. Garantir pip atualizado
-# ------------------------------------------------
-Write-Host "🔄 Atualizando pip..."
+# 2. Criar ambiente virtual
+if (-not (Test-Path ".venv")) {
+    Write-Host "Criando ambiente virtual..."
+    python -m venv .venv
+}
+
+# 3. Ativar ambiente virtual
+Write-Host "Ativando ambiente virtual..."
+& .\.venv\Scripts\Activate.ps1
+
+# 4. Atualizar pip
+Write-Host "Atualizando pip..."
 python -m pip install --upgrade pip
 
-# ------------------------------------------------
-# 3. Verificar / instalar uv
-# ------------------------------------------------
-$uv = Get-Command uv -ErrorAction SilentlyContinue
+# 5. Instalar dependencias
+Write-Host "Instalando dependencias..."
+pip install -r requirements.txt
+pip install pyinstaller
 
-if (-not $uv) {
-    Write-Host "⚠️  uv não encontrado. Instalando..."
-    python -m pip install uv
-} else {
-    Write-Host "✔ uv encontrado: $(uv --version)"
-}
+# 6. Limpar builds antigos
+if (Test-Path "build") { Remove-Item build -Recurse -Force }
+if (Test-Path "dist")  { Remove-Item dist -Recurse -Force }
 
-Write-Host ""
-
-# ------------------------------------------------
-# 4. Criar ambiente virtual
-# ------------------------------------------------
-if (-not (Test-Path ".venv")) {
-    Write-Host "🔧 Criando ambiente virtual..."
-    uv venv
-} else {
-    Write-Host "✔ Ambiente virtual já existe"
-}
-
-Write-Host ""
-
-# ------------------------------------------------
-# 5. Instalar dependências
-# ------------------------------------------------
-Write-Host "📦 Instalando dependências..."
-uv sync
-
-Write-Host ""
-
-# ------------------------------------------------
-# 6. Garantir PyInstaller
-# ------------------------------------------------
-Write-Host "📦 Instalando PyInstaller..."
-uv pip install pyinstaller
-
-Write-Host ""
-
-# ------------------------------------------------
-# 7. Gerar executável
-# ------------------------------------------------
-Write-Host "⚙️  Gerando executável..."
-
-uv run pyinstaller `
+# 7. Gerar executavel
+Write-Host "Gerando executavel..."
+pyinstaller `
     --onefile `
-    --name MeuPrograma `
+    --name lactanet_extraction `
     main.py
 
 Write-Host ""
-
-# ------------------------------------------------
-# 8. Resultado final
-# ------------------------------------------------
-Write-Host "=============================================="
-Write-Host " ✅ EXECUTÁVEL GERADO COM SUCESSO"
-Write-Host "=============================================="
-Write-Host ""
-Write-Host "📁 Arquivo gerado:"
-Write-Host "   dist\MeuPrograma.exe"
-Write-Host ""
-Write-Host "👉 Você pode enviar esse arquivo para qualquer pessoa."
-Write-Host "   Não é necessário Python no computador de destino."
-Write-Host ""
-
-Pause
+Write-Host "======================================="
+Write-Host " Executavel criado com sucesso!"
+Write-Host " Caminho:"
+Write-Host " dist\lactanet_extraction.exe"
+Write-Host "======================================="
