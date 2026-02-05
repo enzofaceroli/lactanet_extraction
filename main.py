@@ -27,7 +27,7 @@ def selecionar_arquivo():
     return caminho
         
  
-def main(input_file_path, searched_animals_path):    
+def main():    
     input_file_path = selecionar_arquivo("Selecione Arquivo de Input")
     searched_animals_path = selecionar_arquivo("Selecione Arquivo de Animais Pesquisados")
     
