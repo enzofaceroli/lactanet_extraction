@@ -28,8 +28,8 @@ def selecionar_arquivo():
         
  
 def main():    
-    input_file_path = selecionar_arquivo("Selecione Arquivo de Input")
-    searched_animals_path = selecionar_arquivo("Selecione Arquivo de Animais Pesquisados")
+    input_file_path = selecionar_arquivo()
+    searched_animals_path = selecionar_arquivo()
     
     if not input_file_path:
         return
